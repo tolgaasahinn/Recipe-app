@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.core.management import call_command
 from django.db.utils import OperationalError
 from django.test import SimpleTestCase
-from psycopg2 import OperationalError as Pyscopg2Error
+from psycopg2 import OperationalError as Psycopg2OpError
 
 
 @patch("core.management.commands.wait_for_db.Command.check")
@@ -24,7 +24,7 @@ class CommandTests(SimpleTestCase):
     def test_wait_for_db_delay(self, patched_sleep, patched_check):
         """Test waiting for database when getting OperationalError."""
         patched_check.side_effect = (
-            [Pyscopg2Error] * 2 + [OperationalError] * 3 + [True]
+            [Psycopg2OpError] * 2 + [OperationalError] * 3 + [True]
         )
 
         call_command("wait_for_db")
