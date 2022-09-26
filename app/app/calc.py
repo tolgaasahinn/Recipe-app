@@ -1,7 +1,5 @@
 """
-2
 Calculator functions
-3
 """
 
 
