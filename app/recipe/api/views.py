@@ -1,9 +1,16 @@
 """Views for the recipes APIs"""
 
 
-from core.models import Recipe
-from recipe.api.serializers import RecipeDetailSerializer, RecipeSerializer
-from rest_framework import viewsets
+from multiprocessing import AuthenticationError
+
+from core.models import Ingredient, Recipe, Tag
+from recipe.api.serializers import (
+    IngredientSerializer,
+    RecipeDetailSerializer,
+    RecipeSerializer,
+    TagSerializer,
+)
+from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -29,3 +36,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new recipe."""
         serializer.save(user=self.request.user)
+
+
+class BaseRecipeAttrViewSet(
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Base viewsets for recipe attributes."""
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Filter queryset to authenticated user"""
+        return self.queryset.filter(user=self.request.user).order_by("-name")
+
+
+class TagViewSet(BaseRecipeAttrViewSet):
+    """Manage tags in the database."""
+
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+
+
+class IngredientViewSet(BaseRecipeAttrViewSet):
+    serializer_class = IngredientSerializer
+    queryset = Ingredient.objects.all()
