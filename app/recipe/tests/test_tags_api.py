@@ -1,9 +1,6 @@
 """Test for the tags API."""
 
 
-from re import T
-from unicodedata import name
-
 from core.models import Tag
 from django.contrib.auth import get_user_model
 from django.test import TestCase
